@@ -36,6 +36,7 @@ type NavItem = { href: string; label: string; icon: ReactNode; exact?: boolean }
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Overview", icon: <HomeIcon />, exact: true },
   { href: "/documents", label: "Documents", icon: <DocumentIcon /> },
+  { href: "/chat", label: "Chat", icon: <ChatIcon /> },
 ];
 
 function ActiveNavLinks({ collapsed }: { collapsed: boolean }) {
@@ -150,6 +151,15 @@ function DocumentIcon() {
       <path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z" />
       <path d="M14 3v5h5" />
       <path d="M8.5 13h7M8.5 16.5h5" />
+    </Icon>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <Icon>
+      <path d="M20 12a7.5 7.5 0 0 1-10.9 6.7L4 20l1.3-4.6A7.5 7.5 0 1 1 20 12z" />
+      <path d="M8.5 11h7M8.5 14h4.5" />
     </Icon>
   );
 }

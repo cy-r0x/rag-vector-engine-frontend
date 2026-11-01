@@ -16,10 +16,13 @@ export type ApiResult<T> =
 
 type ValidationIssue = { loc?: (string | number)[]; msg?: string };
 
-export function postJson<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+export function postJson<T>(path: string, body: unknown, accessToken?: string): Promise<ApiResult<T>> {
   return request<T>(path, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
     body: JSON.stringify(body),
   });
 }
