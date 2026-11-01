@@ -3,6 +3,8 @@ import { Suspense } from "react";
 
 import { requireSession } from "@/lib/session";
 
+import { PageHeader } from "./page-header";
+
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -10,15 +12,11 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <span className="inline-flex rounded-full bg-primary-subdued px-2 py-1 text-[10px] leading-[1.15] font-normal tracking-[0.1px] text-primary-deep uppercase">
-          Dashboard
-        </span>
-        <h1 className="mt-3 text-[32px] leading-[1.1] font-light tracking-[-0.64px] text-ink">Welcome back</h1>
-        <p className="mt-2 text-[15px] leading-[1.4] text-ink-mute">
-          Your workspace for ingesting business documents and querying them.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Overview"
+        title="Welcome back"
+        description="Your workspace for ingesting business documents and querying them."
+      />
 
       <Suspense fallback={<AccountCardSkeleton />}>
         <AccountCard />

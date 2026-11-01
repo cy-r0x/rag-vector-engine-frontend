@@ -41,6 +41,13 @@ export async function requireSession(): Promise<Session> {
   return session;
 }
 
+export async function requireAccessToken(): Promise<string> {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  await connection();
+  if (!token || !parseSession(token)) redirect("/login");
+  return token;
+}
+
 /**
  * Reads the claims of the backend access token without verifying its signature
  * (the frontend does not hold the JWT secret). Use it for routing and display only;

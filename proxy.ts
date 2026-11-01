@@ -24,6 +24,7 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
+// API routes authenticate themselves: Proxy buffers request bodies (10MB by default), which would truncate uploads.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
+  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
 };

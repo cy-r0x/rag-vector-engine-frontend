@@ -1,6 +1,6 @@
 import "server-only";
 
-const API_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
+export const API_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
 
 export type TokenResponse = {
   business_id: string;
@@ -16,14 +16,22 @@ export type ApiResult<T> =
 
 type ValidationIssue = { loc?: (string | number)[]; msg?: string };
 
-export async function postJson<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+export function postJson<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+  return request<T>(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function getJson<T>(path: string, accessToken: string): Promise<ApiResult<T>> {
+  return request<T>(path, { headers: { Authorization: `Bearer ${accessToken}` } });
+}
+
+async function request<T>(path: string, init: RequestInit): Promise<ApiResult<T>> {
   let response: Response;
   try {
-    response = await fetch(`${API_URL}${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    response = await fetch(`${API_URL}${path}`, init);
   } catch {
     return {
       ok: false,
