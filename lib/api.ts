@@ -28,7 +28,11 @@ export function getJson<T>(path: string, accessToken: string): Promise<ApiResult
   return request<T>(path, { headers: { Authorization: `Bearer ${accessToken}` } });
 }
 
-async function request<T>(path: string, init: RequestInit): Promise<ApiResult<T>> {
+export function getText(path: string, accessToken: string): Promise<ApiResult<string>> {
+  return request<string>(path, { headers: { Authorization: `Bearer ${accessToken}` } }, "text");
+}
+
+async function request<T>(path: string, init: RequestInit, as: "json" | "text" = "json"): Promise<ApiResult<T>> {
   let response: Response;
   try {
     response = await fetch(`${API_URL}${path}`, init);
@@ -41,6 +45,9 @@ async function request<T>(path: string, init: RequestInit): Promise<ApiResult<T>
     };
   }
 
+  if (response.ok && as === "text") {
+    return { ok: true, data: (await response.text()) as T };
+  }
   const payload: unknown = await response.json().catch(() => null);
   if (response.ok) {
     return { ok: true, data: payload as T };

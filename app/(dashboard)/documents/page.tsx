@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { getJson } from "@/lib/api";
-import { formatBytes, mimeLabel, type DocumentStatus, type DocumentSummary } from "@/lib/documents";
+import { formatBytes, mimeLabel, type DocumentSummary } from "@/lib/documents";
 import { requireAccessToken } from "@/lib/session";
 
 import { PageHeader } from "../page-header";
 import { DocumentUploader } from "./document-uploader";
 import { LocalTime } from "./local-time";
 import { RefreshButton } from "./refresh-button";
+import { StatusPill } from "./status-pill";
 
 export const metadata: Metadata = {
   title: "Documents",
@@ -71,7 +73,16 @@ async function DocumentTable() {
           {documents.map((doc) => (
             <tr key={doc.doc_id} className="align-top text-ink-secondary">
               <td className="max-w-[320px] truncate px-8 py-3 text-ink" title={doc.filename}>
-                {doc.filename}
+                {doc.status === "INDEXED" ? (
+                  <Link
+                    href={`/documents/${doc.doc_id}`}
+                    className="font-normal text-primary hover:text-primary-deep hover:underline"
+                  >
+                    {doc.filename}
+                  </Link>
+                ) : (
+                  doc.filename
+                )}
               </td>
               <td className="px-4 py-3">{mimeLabel(doc.detected_mime)}</td>
               <td className="px-4 py-3 text-right">{formatBytes(doc.size_bytes)}</td>
@@ -94,22 +105,6 @@ async function DocumentTable() {
         {documents.length} {documents.length === 1 ? "document" : "documents"}
       </p>
     </div>
-  );
-}
-
-const STATUS_STYLES: Record<DocumentStatus, { label: string; className: string }> = {
-  QUEUED: { label: "Queued", className: "bg-canvas-soft text-ink-mute ring-hairline" },
-  PROCESSING: { label: "Processing", className: "bg-primary-subdued/40 text-primary-deep ring-primary-subdued" },
-  INDEXED: { label: "Indexed", className: "bg-emerald-50 text-emerald-700 ring-emerald-600/20" },
-  FAILED: { label: "Failed", className: "bg-ruby/5 text-ruby ring-ruby/25" },
-};
-
-function StatusPill({ status }: { status: DocumentStatus }) {
-  const style = STATUS_STYLES[status];
-  return (
-    <span className={`inline-flex rounded-full px-2 py-0.5 text-[12px] font-normal ring-1 ring-inset ${style.className}`}>
-      {style.label}
-    </span>
   );
 }
 

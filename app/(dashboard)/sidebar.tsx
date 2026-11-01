@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSyncExternalStore, type ReactNode } from "react";
+import { Suspense, useSyncExternalStore, type ReactNode } from "react";
 
 import { logout } from "@/app/actions/auth";
 
@@ -38,8 +38,32 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/documents", label: "Documents", icon: <DocumentIcon /> },
 ];
 
+function ActiveNavLinks({ collapsed }: { collapsed: boolean }) {
+  return <NavLinks collapsed={collapsed} pathname={usePathname()} />;
+}
+
+function NavLinks({ collapsed, pathname }: { collapsed: boolean; pathname: string | null }) {
+  return NAV_ITEMS.map((item) => {
+    const active =
+      pathname !== null && (item.exact ? pathname === item.href : pathname.startsWith(item.href));
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        aria-current={active ? "page" : undefined}
+        title={collapsed ? item.label : undefined}
+        className={`flex h-10 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors ${
+          collapsed ? "justify-center" : ""
+        } ${active ? "bg-primary/8 font-normal text-primary" : "text-ink-secondary hover:bg-canvas-soft hover:text-ink"}`}
+      >
+        <span className="shrink-0">{item.icon}</span>
+        <span className={collapsed ? "sr-only" : "truncate"}>{item.label}</span>
+      </Link>
+    );
+  });
+}
+
 export function Sidebar() {
-  const pathname = usePathname();
   const [collapsed, setCollapsed] = useCollapsed();
 
   return (
@@ -69,27 +93,10 @@ export function Sidebar() {
       </div>
 
       <nav aria-label="Main" className="flex flex-1 flex-col gap-1 px-3 py-4">
-        {NAV_ITEMS.map((item) => {
-          const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
-              title={collapsed ? item.label : undefined}
-              className={`flex h-10 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors ${
-                collapsed ? "justify-center" : ""
-              } ${
-                active
-                  ? "bg-primary/8 font-normal text-primary"
-                  : "text-ink-secondary hover:bg-canvas-soft hover:text-ink"
-              }`}
-            >
-              <span className="shrink-0">{item.icon}</span>
-              <span className={collapsed ? "sr-only" : "truncate"}>{item.label}</span>
-            </Link>
-          );
-        })}
+        {/* The pathname is request-time data on dynamic routes, so only the active highlight streams in. */}
+        <Suspense fallback={<NavLinks collapsed={collapsed} pathname={null} />}>
+          <ActiveNavLinks collapsed={collapsed} />
+        </Suspense>
       </nav>
 
       <form action={logout} className="border-t border-hairline px-3 py-4">
