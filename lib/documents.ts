@@ -4,6 +4,7 @@ export type DocumentSummary = {
   doc_id: string;
   filename: string;
   status: DocumentStatus;
+  status_detail: string | null;
   detected_mime: string;
   size_bytes: number;
   created_at: string;

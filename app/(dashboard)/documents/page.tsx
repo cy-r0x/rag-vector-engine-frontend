@@ -69,7 +69,7 @@ async function DocumentTable() {
         </thead>
         <tbody className="divide-y divide-hairline [font-feature-settings:'tnum']">
           {documents.map((doc) => (
-            <tr key={doc.doc_id} className="text-ink-secondary">
+            <tr key={doc.doc_id} className="align-top text-ink-secondary">
               <td className="max-w-[320px] truncate px-8 py-3 text-ink" title={doc.filename}>
                 {doc.filename}
               </td>
@@ -77,6 +77,11 @@ async function DocumentTable() {
               <td className="px-4 py-3 text-right">{formatBytes(doc.size_bytes)}</td>
               <td className="px-4 py-3">
                 <StatusPill status={doc.status} />
+                {doc.status === "FAILED" && (
+                  <p className="mt-1 max-w-[260px] text-[12px] leading-[1.4] tracking-normal text-ruby">
+                    {doc.status_detail ?? "No reason was recorded for this failure."}
+                  </p>
+                )}
               </td>
               <td className="px-8 py-3 whitespace-nowrap">
                 <LocalTime iso={doc.created_at} />
